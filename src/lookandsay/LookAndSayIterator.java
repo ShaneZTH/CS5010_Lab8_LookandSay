@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class LookAndSayIterator<T> implements RIterator {
-    public static final BigInteger DEFAULT_END =
+    public static final BigInteger DEFAULT_MAX =
             ((new BigDecimal("1E100")).subtract(BigDecimal.ONE)).toBigInteger();
+
+    public static final String TEST_R =
+            "311311222113111231131112132112311321322112111312211312111322212311322113212221";
 //    private Object startSeed;
 //    private Object endValue;
 
@@ -64,7 +67,7 @@ public class LookAndSayIterator<T> implements RIterator {
 
         // TODO:
 //        this.startSeed = startSeed;
-        this.endValue = DEFAULT_END;
+        this.endValue = DEFAULT_MAX;
     }
 
     public LookAndSayIterator() {
@@ -72,7 +75,7 @@ public class LookAndSayIterator<T> implements RIterator {
         this.nextVal = BigInteger.ONE;
         this.prevVal = BigInteger.ONE;
 
-        this.endValue = DEFAULT_END;
+        this.endValue = DEFAULT_MAX;
     }
 
     @Override
@@ -80,23 +83,32 @@ public class LookAndSayIterator<T> implements RIterator {
         // Odd length cannot have previous action performed
         if ((String.valueOf(startSeed)).length() % 2 != 0) return false;
 
-        if (startSeed.equals(prevVal)) calcPrev();
+//        if (startSeed.equals(prevVal)) calcPrev();
+    // FIXME:
+//        prevVal = calcPrev();
+        prevVal = startSeed;
 
         return prevVal.compareTo(endValue) <= 0;
     }
 
     @Override
     public T prev() {
-        if (!hasPrevious()) return (T)endValue;
+//        if (!hasPrevious()) return (T)endValue;
 
-        if (startSeed.equals(prevVal)) calcPrev();
+        // FIXME:
+//        if (startSeed.equals(prevVal)) calcPrev();
+//        nextVal = startSeed;
+//        startSeed = prevVal;
 
-        nextVal = startSeed;
+        // FIXME: trying new logic
+        BigInteger tmp = startSeed;
+        prevVal = calcPrev();
         startSeed = prevVal;
-        return (T)startSeed;
+        nextVal = startSeed;
+        return (T)tmp;
     }
 
-    private void calcPrev() {
+    private BigInteger calcPrev() {
         StringBuilder sb = new StringBuilder();
         String str = String.valueOf(startSeed);
 
@@ -104,6 +116,11 @@ public class LookAndSayIterator<T> implements RIterator {
         // 113211
         // |
         // 12221
+        boolean isT = false;
+        if (str.equals(TEST_R)) {
+            System.out.println("\n\nInput: " + str);
+            isT = true;
+        }
 
         if (str.length() % 2 != 0) {
             throw new IllegalStateException("Idiot Test\n\t" + str);
@@ -112,33 +129,44 @@ public class LookAndSayIterator<T> implements RIterator {
         for (int i = 0; i < str.length(); i+=2) {
             int count = str.charAt(i) - '0';
             char c = str.charAt(i+1);
+
             while (count-- > 0) {
                 sb.append(c);
             }
         }
-
-        prevVal = new BigInteger(sb.toString());
+        if (isT) System.out.println("calcPrev: " + sb);
+        return new BigInteger(sb.toString());
     }
+
+    // 31 13 11 22 21 13 11 12 31 13 11 12 13 21 12 311321322112111312211312111322212311322113212221
+    // 111 3
 
     @Override
     public boolean hasNext() {
-        if (startSeed.equals(nextVal)) calcNext();
+//        if (startSeed.equals(nextVal)) calcNext();
+        // FIXME:
+//        nextVal = calcNext();
+        nextVal = startSeed;
 
         return nextVal.compareTo(endValue) <= 0;
     }
 
     @Override
     public T next() {
-        if (!hasNext()) return (T)endValue;
+//        if (!hasNext()) return (T)endValue;
 
-        if (startSeed.equals(nextVal)) calcNext();
-
-        prevVal = startSeed;
+        // FIXME: the tester's logic is that next() could be called without calling hasNext() ahead
+//        if (startSeed.equals(nextVal)) calcNext();
+//        prevVal = startSeed;
+//        startSeed = nextVal;
+        BigInteger tmp = startSeed;
+        nextVal = calcNext();
         startSeed = nextVal;
-        return (T)startSeed;
+        prevVal = startSeed;
+        return (T)tmp;
     }
 
-    private void calcNext() {
+    private BigInteger calcNext() {
         StringBuilder sb = new StringBuilder();
         String str = String.valueOf(startSeed);
 
@@ -164,7 +192,10 @@ public class LookAndSayIterator<T> implements RIterator {
             // Update i
             i += count;
         }
-        nextVal = new BigInteger(sb.toString());
+
+        System.out.println("\nInput: " + str);
+        System.out.println("calcNext: " + sb);
+        return new BigInteger(sb.toString());
     }
 
     // TODO: remove below

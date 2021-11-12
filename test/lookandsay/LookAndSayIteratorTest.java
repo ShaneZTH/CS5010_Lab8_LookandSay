@@ -4,11 +4,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static org.junit.Assert.*;
 
 public class LookAndSayIteratorTest {
+    public static final BigInteger DEFAULT_MAX =
+            ((new BigDecimal("1E100")).subtract(BigDecimal.ONE)).toBigInteger();
+
     LookAndSayIterator<BigInteger> iter0, iter1, iter2, iter3;
 //    RIterator<BigInteger> iter1, iter2, iter3;
 
@@ -32,10 +36,48 @@ public class LookAndSayIteratorTest {
     }
 
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testCustomInvalidSeed() {
         iter1 = new LookAndSayIterator<>(new BigInteger("666"),
                 new BigInteger("665"));
+    }
+
+    @Test
+    public void testReverseDefaultSeed() {
+        LookAndSayIterator<BigInteger> iterator = new LookAndSayIterator();
+        BigInteger current = new BigInteger("1");
+        iterator.next(); // burn off the first one
+        while (iterator.hasNext()) {
+            current = iterator.next();
+            System.out.println("\tcurr: " + iterator.getStartSeed() + " | " +
+                    iterator.prevVal + ", " + iterator.nextVal);
+        }
+
+        // NOTE:
+        System.out.println("VAL: " + ((LookAndSayIterator) iterator).getStartSeed());
+        // 311311222113111231131112132112311321322112111312211312111322212311322113212221
+
+
+        assertTrue("hasPrevious() should return true", iterator.hasPrevious());
+        BigInteger beyondMax = iterator.prev();
+
+        // NOTE:
+        System.out.println("\nBeyond MAX: " + beyondMax);
+        System.out.println("n/p:\n\n " + ((LookAndSayIterator) iterator).nextVal + "\n " + ((LookAndSayIterator) iterator).prevVal);
+
+        assertTrue("first prev() should return a number larger than " + DEFAULT_MAX + " but " +
+                "didn't, only got " + beyondMax, beyondMax.compareTo(DEFAULT_MAX) > 0);
+        BigInteger sameAsCurrent = iterator.prev();
+        assertEquals("second prev() should return a number equal to last number returned by next()", current, sameAsCurrent);
+        //assertEquals("First call to prev() should return same as last call to next()",
+        //    current, sameMax);
+
+//        while (iterator.hasPrevious()) {
+//            BigInteger b = iterator.prev();
+//            assertTrue("Number " + b.toString() + " cannot be read as " + current.toString(),
+//                    decode(b, current));
+//            current = b;
+//        }
     }
 
 
@@ -66,33 +108,7 @@ public class LookAndSayIteratorTest {
 
     // Test for Default Seed
     @Test
-    public void testDefaultSeed1() {
-        iter1 = new LookAndSayIterator<>();
-
-        assertEquals(BigInteger.valueOf(1), iter1.getStartSeed());
-
-        assertTrue(iter1.hasNext());
-        assertEquals(BigInteger.valueOf(11), iter1.next());
-
-        assertTrue(iter1.hasNext());
-        assertEquals(BigInteger.valueOf(21), iter1.next());
-    }
-
-
-    // 1113122112132113
-    // 1 3 2 11 2 3 11 3
-    // 1321123113
-    // 3 11 2 111 3
-    // 31121113
-    // 111 2 1 3
-    // 111213
-    // 1 2 3
-
-    // 111111121113
-
-    // Test for Default Seed
-    @Test
-    public void testDefaultSeed2() {
+    public void testDefaultSeed0() {
         iter1 = new LookAndSayIterator<>();
 
         assertEquals(BigInteger.valueOf(1), iter1.getStartSeed());
@@ -105,6 +121,65 @@ public class LookAndSayIteratorTest {
         iter1.next();
         assertEquals(BigInteger.valueOf(21), iter1.next());
     }
+
+    // Test for Default Seed
+    @Test
+    public void testDefaultSeed1() {
+        iter1 = new LookAndSayIterator<>();
+
+        assertEquals(BigInteger.valueOf(1), iter1.next());
+
+//        assertTrue(iter1.hasNext());
+        assertEquals(BigInteger.valueOf(11), iter1.next());
+        assertEquals(BigInteger.valueOf(21), iter1.next());
+        assertEquals(BigInteger.valueOf(1211), iter1.next());
+        assertEquals(BigInteger.valueOf(111221), iter1.prev());
+        assertEquals(BigInteger.valueOf(1211), iter1.prev());
+        assertEquals(BigInteger.valueOf(21), iter1.prev());
+        assertEquals(BigInteger.valueOf(11), iter1.prev());
+    }
+
+    @Test
+    public void testDefaultSeed2() {
+        LookAndSayIterator<BigInteger> iterator = new LookAndSayIterator();
+        BigInteger previous = new BigInteger("1");
+        iterator.next();
+
+        while (iterator.hasNext()) {
+            BigInteger b = iterator.next();
+            assertTrue("Number " + previous.toString() + " cannot be read as " + b.toString(),
+                    decode(previous, b));
+            previous = b;
+
+//            System.out.println(previous.toString() + " read as " + b.toString());
+
+        }
+
+        previous = iterator.next();
+        assertTrue("The iterator ended but the last number was not more than " + "100 digits long",
+                previous.toString().length() > 100);
+    }
+
+    /*
+    prev: null  1   11
+    iter:  1    11  21
+
+     */
+
+    private boolean decode(BigInteger a, BigInteger b) {
+        return a.equals(b);
+    }
+    // 1113122112132113
+    // 1 3 2 11 2 3 11 3
+    // 1321123113
+    // 3 11 2 111 3
+    // 31121113
+    // 111 2 1 3
+    // 111213
+    // 1 2 3
+
+    // 111111121113
+
 
     @Test
     public void testPrev1() {
