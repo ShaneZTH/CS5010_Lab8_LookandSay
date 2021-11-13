@@ -8,10 +8,7 @@ public class LookAndSayIterator<T> implements RIterator {
             ((new BigDecimal("1E100")).subtract(BigDecimal.ONE)).toBigInteger();
 
     private BigInteger startSeed;
-    private BigInteger endValue; // The number cannot be greater than this endValue
-
-     BigInteger nextVal;
-     BigInteger prevVal;
+    private BigInteger endValue;
 
     public LookAndSayIterator(T startSeed, T endValue) throws IllegalArgumentException {
         if (!(startSeed instanceof BigInteger) || !(endValue instanceof BigInteger)) {
@@ -35,8 +32,6 @@ public class LookAndSayIterator<T> implements RIterator {
 
         this.startSeed = s;
         this.endValue = e;
-        this.nextVal = s;
-        this.prevVal = s;
     }
 
     public LookAndSayIterator(T startSeed) throws IllegalArgumentException {
@@ -52,78 +47,49 @@ public class LookAndSayIterator<T> implements RIterator {
 
         this.startSeed = (BigInteger) startSeed;
         this.endValue = DEFAULT_MAX;
-        this.nextVal = (BigInteger)startSeed;
-        this.prevVal = (BigInteger)startSeed;
     }
 
     public LookAndSayIterator() {
         this.startSeed = BigInteger.ONE;
         this.endValue = DEFAULT_MAX;
-        this.nextVal = BigInteger.ONE;
-        this.prevVal = BigInteger.ONE;
     }
 
     @Override
     public boolean hasPrevious() {
-        // Odd length cannot have previous action performed
-//        if ((String.valueOf(startSeed)).length() % 2 != 0) return false;
-
-        // FIXME:
-        prevVal = calcPrev();
+        BigInteger prevVal = calcPrev();
         if (prevVal == startSeed) return false;
-//        prevVal = startSeed;
         return prevVal.compareTo(endValue) <= 0;
     }
 
     @Override
     public T prev() {
-//        if (!hasPrevious()) return (T)endValue;
-
-        // FIXME: trying new logic
         BigInteger tmp = startSeed;
-        prevVal = calcPrev();
-        startSeed = prevVal;
-        nextVal = startSeed;
+        startSeed = calcPrev();
         return (T)tmp;
     }
 
     private BigInteger calcPrev() {
-        StringBuilder sb = new StringBuilder();
         String str = String.valueOf(startSeed);
+        if (str.length() % 2 != 0) return startSeed;
 
-        // FIXME: ? what about odds length ?
-
-        if (str.length() % 2 != 0) {
-//            throw new IllegalStateException("Weird Test\n\t" + str);
-            System.out.println("Weird Test " + str);
-            return startSeed;
-        }
-
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i+1 < str.length(); i+=2) {
             int count = str.charAt(i) - '0';
             char c = str.charAt(i+1);
-
-            while (count-- > 0) {
-                sb.append(c);
-            }
+            while (count-- > 0) sb.append(c);
         }
-
         return new BigInteger(sb.toString());
     }
 
     @Override
     public boolean hasNext() {
-        nextVal = startSeed;
-        return nextVal.compareTo(endValue) <= 0;
+        return startSeed.compareTo(endValue) <= 0;
     }
 
     @Override
     public T next() {
-        // FIXME: the tester's logic is that next() could be called without calling hasNext() ahead
         BigInteger tmp = startSeed;
-        nextVal = calcNext();
-        startSeed = nextVal;
-        prevVal = startSeed;
+        startSeed = calcNext();
         return (T)tmp;
     }
 
@@ -137,7 +103,6 @@ public class LookAndSayIterator<T> implements RIterator {
 
             for (int j = i + 1; j < str.length(); j++) {
                 if (str.charAt(j) != c) break;
-
                 count++;
             }
 
@@ -145,21 +110,8 @@ public class LookAndSayIterator<T> implements RIterator {
             sb.append(count+"");
             sb.append(c);
 
-            // Update i
             i += count;
         }
-
-        System.out.println("\nInput: " + str);
-        System.out.println("calcNext: " + sb);
         return new BigInteger(sb.toString());
-    }
-
-    // TODO: remove below
-    public Object getStartSeed() {
-        return startSeed;
-    }
-
-    public Object getEndValue() {
-        return endValue;
     }
 }

@@ -32,7 +32,7 @@ public class LookAndSayIteratorTest {
 
     @Test
     public void initTest1() {
-        System.out.println(((LookAndSayIterator) (iter1)).getEndValue());
+
     }
 
 
@@ -49,8 +49,6 @@ public class LookAndSayIteratorTest {
         iterator.next(); // burn off the first one
         while (iterator.hasNext()) {
             current = iterator.next();
-            System.out.println("\tcurr: " + iterator.getStartSeed() + " | " +
-                    iterator.prevVal + ", " + iterator.nextVal);
         }
 
         assertTrue("hasPrevious() should return true", iterator.hasPrevious());
@@ -91,8 +89,6 @@ public class LookAndSayIteratorTest {
 
     @Test
     public void next0() {
-        System.out.println(iter0.getStartSeed());
-        System.out.println(iter0.getEndValue());
         System.out.println(iter0.next());
         System.out.println(iter0.next());
     }
@@ -142,48 +138,13 @@ public class LookAndSayIteratorTest {
                 previous.toString().length() > 100);
     }
 
-    /*
-    prev: null  1   11
-    iter:  1    11  21
-
-     */
-
     private boolean decode(BigInteger a, BigInteger b) {
         return a.equals(b);
     }
-    // 1113122112132113
-    // 1 3 2 11 2 3 11 3
-    // 1321123113
-    // 3 11 2 111 3
-    // 31121113
-    // 111 2 1 3
-    // 111213
-    // 1 2 3
-
-    // 111111121113
-
 
     @Test
     public void testPrev1() {
         iter2 = new LookAndSayIterator<>(new BigInteger("1113122112132113"),
                 new BigInteger("1113122112132113"));
-        System.out.println(iter2.prev());
-        System.out.printf("\t%s %s %s\n", iter2.getStartSeed(), iter2.prevVal, iter2.nextVal);
-        System.out.println(iter2.prev());
-        System.out.printf("\t%s %s %s\n", iter2.getStartSeed(), iter2.prevVal, iter2.nextVal);
-        System.out.println(iter2.prev());
-        System.out.printf("\t%s %s %s\n", iter2.getStartSeed(), iter2.prevVal, iter2.nextVal);
-        System.out.println(iter2.prev());
-        System.out.printf("\t%s %s %s\n", iter2.getStartSeed(), iter2.prevVal, iter2.nextVal);
-
-        System.out.println(iter2.next());
-        System.out.printf("\t%s %s %s\n", iter2.getStartSeed(), iter2.prevVal, iter2.nextVal);
-        System.out.println(iter2.next());
-        System.out.printf("\t%s\n", iter2.getStartSeed());
-        System.out.println(iter2.next());
-        System.out.println(iter2.next());
-        System.out.println(iter2.next());
-        System.out.println(iter2.next());
-        System.out.println(iter2.next());
     }
 }
